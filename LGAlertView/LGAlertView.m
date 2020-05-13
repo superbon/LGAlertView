@@ -1672,9 +1672,9 @@ LGAlertViewType;
 
     [keyWindow endEditing:YES];
 
-    if (!hidden && keyWindow != LGAlertViewHelper.appWindow) {
-        keyWindow.hidden = YES;
-    }
+//    if (!hidden && keyWindow != LGAlertViewHelper.appWindow) {
+//        keyWindow.hidden = YES;
+//    }
 
     [self.window makeKeyAndVisible];
 
@@ -2881,6 +2881,7 @@ LGAlertViewType;
                 self.tableView.scrollEnabled = NO;
                 [self.tableView registerClass:[LGAlertViewCell class] forCellReuseIdentifier:@"cell"];
                 self.tableView.frame = CGRectMake(0.0, 0.0, width, CGFLOAT_MAX);
+                self.tableView.estimatedRowHeight = _buttonsHeight;
                 [self.tableView reloadData];
                 [self.tableView layoutIfNeeded];
 

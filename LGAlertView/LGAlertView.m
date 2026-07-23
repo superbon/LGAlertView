@@ -58,6 +58,31 @@ NSString * _Nonnull const LGAlertViewDismissAnimationsNotification = @"LGAlertVi
 
 NSString * _Nonnull const kLGAlertViewAnimationDuration = @"duration";
 
+#pragma mark - Functions
+
+/**
+ Height for a multiline label, rounded up to whole, integral lines.
+
+ -sizeThatFits: can return a fractional height that is a hair short of what the text
+ renderer needs for the last line. Because these labels get a fixed frame instead of
+ being laid out by constraints, that shortfall makes the label silently drop its last
+ line and vertically center what is left, so the text reads as cut off even though the
+ space for it was reserved.
+ */
+static CGFloat LGAlertViewLabelHeight(UILabel * _Nonnull label, CGFloat width) {
+    CGSize size = [label sizeThatFits:CGSizeMake(width, CGFLOAT_MAX)];
+
+    CGFloat lineHeight = label.font.lineHeight;
+
+    if (lineHeight <= 0.0) {
+        return ceil(size.height);
+    }
+
+    CGFloat numberOfLines = MAX(1.0, round(size.height / lineHeight));
+
+    return ceil(lineHeight) * numberOfLines;
+}
+
 #pragma mark - Types
 
 typedef enum {
@@ -2095,8 +2120,8 @@ LGAlertViewType;
             self.titleLabel.backgroundColor = UIColor.clearColor;
             self.titleLabel.font = self.titleFont;
 
-            CGSize titleLabelSize = [self.titleLabel sizeThatFits:CGSizeMake(width - LGAlertViewPaddingWidth * 2.0, CGFLOAT_MAX)];
-            CGRect titleLabelFrame = CGRectMake(LGAlertViewPaddingWidth, self.innerMarginHeight, width - LGAlertViewPaddingWidth * 2.0, titleLabelSize.height);
+            CGFloat titleLabelHeight = LGAlertViewLabelHeight(self.titleLabel, width - LGAlertViewPaddingWidth * 2.0);
+            CGRect titleLabelFrame = CGRectMake(LGAlertViewPaddingWidth, self.innerMarginHeight, width - LGAlertViewPaddingWidth * 2.0, titleLabelHeight);
 
             if (LGAlertViewHelper.isNotRetina) {
                 titleLabelFrame = CGRectIntegral(titleLabelFrame);
@@ -2125,8 +2150,8 @@ LGAlertViewType;
                 offsetY -= self.innerMarginHeight / 3.0;
             }
 
-            CGSize messageLabelSize = [self.messageLabel sizeThatFits:CGSizeMake(width - LGAlertViewPaddingWidth * 2.0, CGFLOAT_MAX)];
-            CGRect messageLabelFrame = CGRectMake(LGAlertViewPaddingWidth, offsetY + self.innerMarginHeight / 2.0, width-LGAlertViewPaddingWidth * 2.0, messageLabelSize.height);
+            CGFloat messageLabelHeight = LGAlertViewLabelHeight(self.messageLabel, width - LGAlertViewPaddingWidth * 2.0);
+            CGRect messageLabelFrame = CGRectMake(LGAlertViewPaddingWidth, offsetY + self.innerMarginHeight / 2.0, width-LGAlertViewPaddingWidth * 2.0, messageLabelHeight);
 
             if (LGAlertViewHelper.isNotRetina) {
                 messageLabelFrame = CGRectIntegral(messageLabelFrame);
